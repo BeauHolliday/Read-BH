@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Read BH</title>
   <style>
-    :root { --bg: #fafafa; --text: #111; --muted: #666; --accent: #8b5cf6; }
-    [data-theme="dark"] { --bg: #0b0b0d; --text: #e6edf3; --muted: #9aa4b2; }
+    :root { 
+      --bg: #fafafa; 
+      --text: #111; 
+      --muted: #666; 
+      --accent: #8b5cf6;
+      --link: #8b0000;
+    }
+    [data-theme="dark"] { 
+      --bg: #0b0b0d; 
+      --text: #e6edf3; 
+      --muted: #9aa4b2;
+      --link: #dc143c;
+    }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: Georgia, serif;
       background: var(--bg); 
       color: var(--text);
       padding: 20px;
@@ -18,8 +29,47 @@
     }
     
     .container { max-width: 700px; margin: 0 auto; }
-    h1 { font-size: 2.5em; margin-bottom: 10px; }
+    
+    .header-banner {
+      width: 100%;
+      height: 200px;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 12px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+    
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .profile-pic {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(139, 92, 246, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    
+    h1 { 
+      font-size: 2.5em; 
+      margin-bottom: 10px;
+      font-weight: normal;
+    }
     .subtitle { color: var(--muted); margin-bottom: 30px; }
+    
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
     
     .works-list { margin: 40px 0; }
     .work-item { 
@@ -28,8 +78,15 @@
       background: rgba(139, 92, 246, 0.05);
       border-radius: 12px;
       cursor: pointer;
+      transition: all 0.3s;
     }
-    .work-item h3 { margin-bottom: 5px; }
+    .work-item:hover {
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .work-item h3 { 
+      margin-bottom: 5px;
+      color: var(--link);
+    }
     .work-item p { color: var(--muted); font-size: 0.9em; }
     
     .reader { display: none; }
@@ -47,17 +104,23 @@
     .controls { display: flex; gap: 10px; flex-wrap: wrap; }
     .btn { 
       background: transparent;
-      border: 1px solid rgba(0,0,0,0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
       padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
       color: var(--text);
+      font-family: Georgia, serif;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      border-color: var(--link);
+      color: var(--link);
     }
     
     .content { 
       font-size: 18px;
-      line-height: 1.7;
+      line-height: 1.8;
       max-width: 65ch;
       margin: 0 auto 40px;
     }
@@ -65,10 +128,11 @@
     
     .progress-bar {
       height: 4px;
-      background: var(--accent);
+      background: var(--link);
       width: 0%;
       transition: width 0.2s;
       margin-bottom: 30px;
+      border-radius: 2px;
     }
     
     .actions { 
@@ -92,6 +156,7 @@
     @media (max-width: 600px) {
       h1 { font-size: 2em; }
       .content { font-size: 16px; }
+      .header-banner { height: 150px; }
     }
   </style>
 </head>
@@ -99,16 +164,25 @@
   <div class="container">
     <!-- Home/List View -->
     <div id="home" class="home">
-      <h1>Read BH</h1>
-      <p class="subtitle">A collection of written works by Beau Holliday</p>
+      <div class="header-banner">
+        [Header Banner Image]
+      </div>
+      
+      <div class="profile-section">
+        <div class="profile-pic">
+          [Profile]
+        </div>
+        <div>
+          <h1>Read BH</h1>
+          <p class="subtitle">Poems & Stories</p>
+        </div>
+      </div>
       
       <div class="works-list">
-        <!-- Add new works here by copying this block -->
         <div class="work-item" onclick="openWork('small-night')">
           <h3>Small Night</h3>
           <p>Night folds its small rooms around me like a hand...</p>
         </div>
-        <!-- End of work item -->
       </div>
     </div>
     
@@ -120,153 +194,4 @@
           <p class="subtitle" id="work-date">Date</p>
         </div>
         <div class="controls">
-          <button class="btn" onclick="closeReader()">← Back</button>
-          <button class="btn" onclick="toggleTheme()">🌓 Theme</button>
-          <button class="btn" onclick="togglePrefs()">Aa Settings</button>
-        </div>
-      </div>
-      
-      <div class="prefs" id="prefs">
-        <label>Font size: <input type="range" id="fontSize" min="14" max="24" value="18"></label>
-        <label>Line height: <input type="range" id="lineHeight" min="15" max="22" value="17"></label>
-      </div>
-      
-      <div class="progress-bar" id="progress"></div>
-      
-      <article class="content" id="content">
-        <!-- Content loads here -->
-      </article>
-      
-      <div class="actions">
-        <button class="btn" onclick="likeWork()">❤️ Like <span id="likeCount">0</span></button>
-        <button class="btn" onclick="favoriteWork()">⭐ <span id="favText">Favorite</span></button
-      </div>
-      
-      <!-- Add Utterances comments here later -->
-      
-    </div>
-  </div>
-
-  <!-- Add the JavaScript here -->
-  <script>
-    // [Paste all the JavaScript code I gave you here]
-  // Work data storage
-  const works = {
-    'small-night': { 
-      title: 'Small Night', 
-      date: 'October 2024',
-      file: 'works/small-night.html' 
-    }
-  };
-
-  // Open a work in reader
-  function openWork(slug) {
-    const work = works[slug];
-    if (!work) return;
-    
-    // Load work content
-    fetch(work.file)
-      .then(r => r.text())
-      .then(html => {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        const script = tempDiv.querySelector('script').textContent;
-        eval(script.match(/window\.workData = ({[\s\S]*?});/)[1]);
-        
-        document.getElementById('work-title').textContent = window.workData.title;
-        document.getElementById('work-date').textContent = window.workData.date;
-        document.getElementById('content').innerHTML = window.workData.content;
-        document.getElementById('reader').dataset.slug = slug;
-        
-        document.getElementById('home').style.display = 'none';
-        document.getElementById('reader').classList.add('active');
-        
-        loadPrefs();
-        updateProgress();
-      });
-  }
-
-  // Close reader
-  function closeReader() {
-    document.getElementById('home').style.display = 'block';
-    document.getElementById('reader').classList.remove('active');
-  }
-
-  // Theme toggle
-  function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    document.documentElement.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
-    localStorage.setItem('theme', current === 'dark' ? 'light' : 'dark');
-  }
-
-  // Settings toggle
-  function togglePrefs() {
-    document.getElementById('prefs').classList.toggle('show');
-  }
-
-  // Font controls
-  document.getElementById('fontSize').addEventListener('input', e => {
-    document.getElementById('content').style.fontSize = e.target.value + 'px';
-    localStorage.setItem('fontSize', e.target.value);
-  });
-
-  document.getElementById('lineHeight').addEventListener('input', e => {
-    document.getElementById('content').style.lineHeight = e.target.value / 10;
-    localStorage.setItem('lineHeight', e.target.value);
-  });
-
-  // Progress bar
-  function updateProgress() {
-    const scrolled = window.scrollY;
-    const height = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = height > 0 ? (scrolled / height) * 100 : 0;
-    document.getElementById('progress').style.width = progress + '%';
-  }
-  window.addEventListener('scroll', updateProgress);
-
-  // Like/Favorite functions
-  function likeWork() {
-    const slug = document.getElementById('reader').dataset.slug;
-    const key = `likes_${slug}`;
-    const likes = parseInt(localStorage.getItem(key) || 0) + 1;
-    localStorage.setItem(key, likes);
-    document.getElementById('likeCount').textContent = likes;
-  }
-
-  function favoriteWork() {
-    const slug = document.getElementById('reader').dataset.slug;
-    const key = `fav_${slug}`;
-    const isFav = localStorage.getItem(key) === '1';
-    localStorage.setItem(key, isFav ? '0' : '1');
-    document.getElementById('favText').textContent = isFav ? 'Favorite' : 'Favorited';
-  }
-
-  // Load preferences
-  function loadPrefs() {
-    const fontSize = localStorage.getItem('fontSize') || 18;
-    const lineHeight = localStorage.getItem('lineHeight') || 17;
-    const theme = localStorage.getItem('theme') || 'light';
-    
-    document.getElementById('fontSize').value = fontSize;
-    document.getElementById('lineHeight').value = lineHeight;
-    document.getElementById('content').style.fontSize = fontSize + 'px';
-    document.getElementById('content').style.lineHeight = lineHeight / 10;
-    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
-    
-    // Load likes/favs
-    const slug = document.getElementById('reader').dataset.slug;
-    const likes = localStorage.getItem(`likes_${slug}`) || 0;
-    const isFav = localStorage.getItem(`fav_${slug}`) === '1';
-    document.getElementById('likeCount').textContent = likes;
-    document.getElementById('favText').textContent = isFav ? 'Favorited' : 'Favorite';
-  }
-
-  // Handle direct links
-  if (window.location.hash) {
-    openWork(window.location.hash.slice(1));
-  }
-</script>
-
-
-</body>
-</html>
+          <button class="btn" onclick="closeReader()">← Back</button> [9F742443-6C92-4C44-BF58-8F5A7C53B6F1](https://github.com/VBalaguera/portfolioMarta/tree/e5b772e80456f08667fb2f1301668c18c5b28559/indexbackup.md?citationMarker=9F742443-6C92-4C44-BF58-8F5A7C53B6F1&citationId=BDFC4F24-FF5A-44F2-974C-83DA5BD9530A,1A4CE1A2-C052-43A7-8922-AD6C16E8F64A&citationTitle=github.com%20+1&citationFullTitle=github.com%20+1&chatItemId=xwubgpprwfxh3d6sS99PF)
