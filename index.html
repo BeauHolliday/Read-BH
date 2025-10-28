@@ -185,7 +185,6 @@
         </div>
       </div>
     </div>
-    
     <!-- Reader View -->
     <div id="reader" class="reader" data-slug="">
       <div class="reader-header">
@@ -194,4 +193,159 @@
           <p class="subtitle" id="work-date">Date</p>
         </div>
         <div class="controls">
-          <button class="btn" onclick="closeReader()">← Back</button> [9F742443-6C92-4C44-BF58-8F5A7C53B6F1](https://github.com/VBalaguera/portfolioMarta/tree/e5b772e80456f08667fb2f1301668c18c5b28559/indexbackup.md?citationMarker=9F742443-6C92-4C44-BF58-8F5A7C53B6F1&citationId=BDFC4F24-FF5A-44F2-974C-83DA5BD9530A,1A4CE1A2-C052-43A7-8922-AD6C16E8F64A&citationTitle=github.com%20+1&citationFullTitle=github.com%20+1&chatItemId=xwubgpprwfxh3d6sS99PF)
+          <button class="btn" onclick="closeReader()">← Back</button>
+          <button class="btn" onclick="toggleTheme()">🌓 Theme</button>
+          <button class="btn" onclick="togglePrefs()">Aa Settings</button>
+        </div>
+      </div>
+      
+      <div class="prefs" id="prefs">
+        <label>Font size: <input type="range" id="fontSize" min="14" max="24" value="18"></label>
+        <label>Line height: <input type="range" id="lineHeight" min="15" max="22" value="17"></label>
+      </div>
+      
+      <div class="progress-bar" id="progress"></div>
+      
+      <article class="content" id="content">
+        <!-- Content loads here -->
+      </article>
+      
+      <div class="actions">
+        <button class="btn" onclick="likeWork()">❤️ Like <span id="likeCount">0</span></button>
+        <button class="btn" onclick="favoriteWork()">⭐ <span id="favText">Favorite</span></button>
+        <button class="btn" onclick="shareWork()">📤 Share</button>
+      </div>
+      
+      <!-- Comments section placeholder -->
+      <div style="margin-top: 40px; padding-top: 40px; border-top: 1px solid rgba(139,92,246,0.2);">
+        <h3>Comments</h3>
+        <p style="color: var(--muted); margin-top: 10px;">[Utterances comments will go here]</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Work data storage
+    const works = {
+      'small-night': { 
+        title: 'Small Night', 
+        date: 'October 2024',
+        content: `
+          <p>Night folds its small rooms around me like a hand,</p>
+          <p>and in each pocket of dark a single sentence breathes.</p>
+          <p>I count the thin lights like loose change and press them</p>
+          <p>to my chest until the city becomes a quiet coin.</p>
+        `
+      }
+    };
+
+    // Open work
+    function openWork(slug) {
+      const work = works[slug];
+      if (!work) return;
+      
+      document.getElementById('work-title').textContent = work.title;
+      document.getElementById('work-date').textContent = work.date;
+      document.getElementById('content').innerHTML = work.content;
+      document.getElementById('reader').dataset.slug = slug;
+      
+      document.getElementById('home').style.display = 'none';
+      document.getElementById('reader').classList.add('active');
+      
+      loadPrefs();
+      updateProgress();
+    }
+
+    // Close reader
+    function closeReader() {
+      document.getElementById('home').style.display = 'block';
+      document.getElementById('reader').classList.remove('active');
+    }
+
+    // Theme toggle
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
+      localStorage.setItem('theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Settings toggle
+    function togglePrefs() {
+      document.getElementById('prefs').classList.toggle('show');
+    }
+
+    // Font controls
+    document.getElementById('fontSize').addEventListener('input', e => {
+      document.getElementById('content').style.fontSize = e.target.value + 'px';
+      localStorage.setItem('fontSize', e.target.value);
+    });
+
+    document.getElementById('lineHeight').addEventListener('input', e => {
+      document.getElementById('content').style.lineHeight = e.target.value / 10;
+      localStorage.setItem('lineHeight', e.target.value);
+    });
+
+    // Progress bar
+    function updateProgress() {
+      const scrolled = window.scrollY;
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = height > 0 ? (scrolled / height) * 100 : 0;
+      document.getElementById('progress').style.width = progress + '%';
+    }
+    window.addEventListener('scroll', updateProgress);
+
+    // Like/Favorite/Share functions
+    function likeWork() {
+      const slug = document.getElementById('reader').dataset.slug;
+      const key = `likes_${slug}`;
+      const likes = parseInt(localStorage.getItem(key) || 0) + 1;
+      localStorage.setItem(key, likes);
+      document.getElementById('likeCount').textContent = likes;
+    }
+
+    function favoriteWork() {
+      const slug = document.getElementById('reader').dataset.slug;
+      const key = `fav_${slug}`;
+      const isFav = localStorage.getItem(key) === '1';
+      localStorage.setItem(key, isFav ? '0' : '1');
+      document.getElementById('favText').textContent = isFav ? 'Favorite' : 'Favorited';
+    }
+
+    function shareWork() {
+      if (navigator.share) {
+        navigator.share({
+          title: document.getElementById('work-title').textContent,
+          text: 'Check out this piece on Read BH',
+          url: window.location.href
+        });
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Link copied!');
+      }
+    }
+
+    // Load preferences
+    function loadPrefs() {
+      const fontSize = localStorage.getItem('fontSize') || 18;
+      const lineHeight = localStorage.getItem('lineHeight') || 17;
+      
+      document.getElementById('fontSize').value = fontSize;
+      document.getElementById('lineHeight').value = lineHeight;
+      document.getElementById('content').style.fontSize = fontSize + 'px';
+      document.getElementById('content').style.lineHeight = lineHeight / 10;
+      
+      // Load likes/favs
+      const slug = document.getElementById('reader').dataset.slug;
+      const likes = localStorage.getItem(`likes_${slug}`) || 0;
+      const isFav = localStorage.getItem(`fav_${slug}`) === '1';
+      document.getElementById('likeCount').textContent = likes;
+      document.getElementById('favText').textContent = isFav ? 'Favorited' : 'Favorite';
+    }
+
+    // Handle direct links
+    if (window.location.hash) {
+      openWork(window.location.hash.slice(1));
+    }
+  </script>
+
+</body>
+</html>
