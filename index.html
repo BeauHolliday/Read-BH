@@ -140,3 +140,133 @@
       <div class="actions">
         <button class="btn" onclick="likeWork()">❤️ Like <span id="likeCount">0</span></button>
         <button class="btn" onclick="favoriteWork()">⭐ <span id="favText">Favorite</span></button
+      </div>
+      
+      <!-- Add Utterances comments here later -->
+      
+    </div>
+  </div>
+
+  <!-- Add the JavaScript here -->
+  <script>
+    // [Paste all the JavaScript code I gave you here]
+  // Work data storage
+  const works = {
+    'small-night': { 
+      title: 'Small Night', 
+      date: 'October 2024',
+      file: 'works/small-night.html' 
+    }
+  };
+
+  // Open a work in reader
+  function openWork(slug) {
+    const work = works[slug];
+    if (!work) return;
+    
+    // Load work content
+    fetch(work.file)
+      .then(r => r.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const script = tempDiv.querySelector('script').textContent;
+        eval(script.match(/window\.workData = ({[\s\S]*?});/)[1]);
+        
+        document.getElementById('work-title').textContent = window.workData.title;
+        document.getElementById('work-date').textContent = window.workData.date;
+        document.getElementById('content').innerHTML = window.workData.content;
+        document.getElementById('reader').dataset.slug = slug;
+        
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('reader').classList.add('active');
+        
+        loadPrefs();
+        updateProgress();
+      });
+  }
+
+  // Close reader
+  function closeReader() {
+    document.getElementById('home').style.display = 'block';
+    document.getElementById('reader').classList.remove('active');
+  }
+
+  // Theme toggle
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
+    localStorage.setItem('theme', current === 'dark' ? 'light' : 'dark');
+  }
+
+  // Settings toggle
+  function togglePrefs() {
+    document.getElementById('prefs').classList.toggle('show');
+  }
+
+  // Font controls
+  document.getElementById('fontSize').addEventListener('input', e => {
+    document.getElementById('content').style.fontSize = e.target.value + 'px';
+    localStorage.setItem('fontSize', e.target.value);
+  });
+
+  document.getElementById('lineHeight').addEventListener('input', e => {
+    document.getElementById('content').style.lineHeight = e.target.value / 10;
+    localStorage.setItem('lineHeight', e.target.value);
+  });
+
+  // Progress bar
+  function updateProgress() {
+    const scrolled = window.scrollY;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = height > 0 ? (scrolled / height) * 100 : 0;
+    document.getElementById('progress').style.width = progress + '%';
+  }
+  window.addEventListener('scroll', updateProgress);
+
+  // Like/Favorite functions
+  function likeWork() {
+    const slug = document.getElementById('reader').dataset.slug;
+    const key = `likes_${slug}`;
+    const likes = parseInt(localStorage.getItem(key) || 0) + 1;
+    localStorage.setItem(key, likes);
+    document.getElementById('likeCount').textContent = likes;
+  }
+
+  function favoriteWork() {
+    const slug = document.getElementById('reader').dataset.slug;
+    const key = `fav_${slug}`;
+    const isFav = localStorage.getItem(key) === '1';
+    localStorage.setItem(key, isFav ? '0' : '1');
+    document.getElementById('favText').textContent = isFav ? 'Favorite' : 'Favorited';
+  }
+
+  // Load preferences
+  function loadPrefs() {
+    const fontSize = localStorage.getItem('fontSize') || 18;
+    const lineHeight = localStorage.getItem('lineHeight') || 17;
+    const theme = localStorage.getItem('theme') || 'light';
+    
+    document.getElementById('fontSize').value = fontSize;
+    document.getElementById('lineHeight').value = lineHeight;
+    document.getElementById('content').style.fontSize = fontSize + 'px';
+    document.getElementById('content').style.lineHeight = lineHeight / 10;
+    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+    
+    // Load likes/favs
+    const slug = document.getElementById('reader').dataset.slug;
+    const likes = localStorage.getItem(`likes_${slug}`) || 0;
+    const isFav = localStorage.getItem(`fav_${slug}`) === '1';
+    document.getElementById('likeCount').textContent = likes;
+    document.getElementById('favText').textContent = isFav ? 'Favorited' : 'Favorite';
+  }
+
+  // Handle direct links
+  if (window.location.hash) {
+    openWork(window.location.hash.slice(1));
+  }
+</script>
+
+
+</body>
+</html>
